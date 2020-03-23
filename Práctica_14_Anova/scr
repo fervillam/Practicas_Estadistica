@@ -201,8 +201,8 @@ summary(anovdtcp)
 #Residuals    54  10132   187.6
 
 ##Al tener un p-valor mayor a 0.05, podemos decir que no hay diferencias significativas.
-##Por tanto, no hay diferencias entre los niveles de azucar de las dos frutas.
+##Por tanto, no hay diferencias entre los niveles de azúcar de las dos frutas.
 
 boxgm <- ggplot(Datacomp, aes(x = Var, y = Azucarmg, fill = Fase)) +
-  geom_boxplot() + ggtitle("ProducciÃ³n de azÃºcares en nectarios")
+  geom_boxplot() + ggtitle("Producción de azúcares en nectarios")
 boxgm
