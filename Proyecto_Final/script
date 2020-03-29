@@ -1,0 +1,381 @@
+ ##### Relación entre morfología y fenotipo en Caharanthus Roseus #####
+
+#### Cargar los paquetes necesarios ####
+
+if(!require(tidyverse)){install.packages("tidyverse")}
+if(!require(ggpubr)){install.packages("ggpubr")}
+if(!require(rstatix)){install.packages("rstatix")}
+if(!require(car)){install.packages("car")}
+if(!require(multcomp)){install.packages("multcomp")}
+if(!require(ggplot2)){install.packages("ggplot2")}
+if(!require(biotools)){install.packages("biotools")}
+if(!require(moments)){install.packages("moments")}
+if(!require(nortest)){install.packages("nortest")}
+if(!require(Rmisc)){install.packages("Rmisc")}
+
+#### Cargar la base de datos del muestreo de C. roseus y pasarlo a un data frame ####
+
+muestreo <- as.data.frame(read.csv(file='D:/UIS/2019-2/Estadística/Proyecto/muestreo_flores.csv', header=TRUE, sep=","))
+
+attach(muestreo)
+
+#### Explorar las variables ####
+
+glimpse(muestreo) # Exploración manual
+
+  # Observations: 280
+  #Variables: 9
+  #$ individuo <int> 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, ...
+  #$ flor      <int> 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7, ...
+  #$ colcor    <fct> rosa, rosa, rosa, rosa, rosa, rosa, rosa, rosa, rosa, rosa, rosa, rosa, rosa, rosa, ...
+  #$ longpet   <dbl> 2.0, 1.9, 1.9, 2.0, 1.8, 2.0, 1.9, 2.5, 2.6, 2.4, 2.5, 2.4, 2.4, 2.5, 2.3, 2.1, 2.3,...
+  #$ anchpet   <dbl> 1.7, 1.8, 1.7, 1.7, 2.0, 1.8, 1.7, 2.0, 2.1, 2.0, 2.1, 2.0, 2.0, 2.0, 2.0, 2.0, 2.1,...
+  #$ longsep   <dbl> 1.1, 0.8, 0.8, 1.0, 1.0, 0.8, 0.8, 0.9, 0.9, 1.0, 0.9, 0.8, 0.8, 0.8, 0.8, 0.9, 1.0,...
+  #$ anchsep   <dbl> 0.4, 0.3, 0.3, 0.4, 0.3, 0.4, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.3, 0.3, 0.4, 0.4, 0.4,...
+  #$ longped   <dbl> 2.0, 1.7, 2.6, 2.4, 2.3, 2.0, 2.1, 2.3, 2.4, 2.2, 2.4, 2.2, 2.1, 2.0, 2.0, 2.1, 2.2,...
+  #$ diamcor   <dbl> 4.0, 4.0, 4.0, 4.0, 3.9, 4.0, 4.1, 5.1, 5.0, 5.0, 5.1, 5.0, 5.0, 5.0, 4.5, 4.4, 4.5,...
+
+summary(muestreo) # Descriptivos por variable cuantitativa
+
+  #individuo          flor       colcor      longpet         anchpet         longsep      
+  #Min.   : 1.00   Min.   :1   blanco :70   Min.   :1.800   Min.   :1.600   Min.   :0.8000  
+  #1st Qu.:10.75   1st Qu.:2   lila   :70   1st Qu.:2.000   1st Qu.:2.000   1st Qu.:0.8000  
+  #Median :20.50   Median :4   magenta:70   Median :2.100   Median :2.100   Median :0.9000  
+  #Mean   :20.50   Mean   :4   rosa   :70   Mean   :2.123   Mean   :2.086   Mean   :0.8961  
+  #3rd Qu.:30.25   3rd Qu.:6                3rd Qu.:2.200   3rd Qu.:2.200   3rd Qu.:1.0000  
+  #Max.   :40.00   Max.   :7                Max.   :2.600   Max.   :2.500   Max.   :1.1000  
+  #anchsep          longped         diamcor     
+  #Min.   :0.3000   Min.   :1.600   Min.   :3.900  
+  #1st Qu.:0.3000   1st Qu.:2.000   1st Qu.:4.000  
+  #Median :0.4000   Median :2.100   Median :4.200  
+  #Mean   :0.3568   Mean   :2.099   Mean   :4.286  
+  #3rd Qu.:0.4000   3rd Qu.:2.200   3rd Qu.:4.500  
+  #Max.   :0.4000   Max.   :2.800   Max.   :5.100 
+
+d1 <- ddply(muestreo, 'colcor', summarise, grp.mean=mean(longpet),
+      grp.median=median(longpet),
+      grp.SD=sd(longpet))
+  
+
+d2 <- ddply(muestreo, 'colcor', summarise, grp.mean=mean(anchpet),
+      grp.median=median(anchpet),
+      grp.SD=sd(anchpet)) 
+
+d3 <- ddply(muestreo, 'colcor', summarise, grp.mean=mean(longsep),
+            grp.median=median(longsep),
+            grp.SD=sd(longsep))
+
+d4 <- ddply(muestreo, 'colcor', summarise, grp.mean=mean(anchsep),
+            grp.median=median(anchsep),
+            grp.SD=sd(anchsep))
+
+d5 <- ddply(muestreo, 'colcor', summarise, grp.mean=mean(longped),
+            grp.median=median(longped),
+            grp.SD=sd(longped))
+
+d6 <- ddply(muestreo, 'colcor', summarise, grp.mean=mean(diamcor),
+            grp.median=median(diamcor),
+            grp.SD=sd(diamcor))
+
+table(muestreo$colcor)
+
+#blanco lila magenta   rosa 
+#70      70      70    70 
+
+#### Comenzar exploración visual de descriptivos ####
+
+qp1 <- qplot(longpet, longsep, data = muestreo, color = colcor, size = longped, alpha = I(0.3))+
+  xlab("Longitud del pétalo")+
+  ylab("Longitud del sépalo")
+
+  ### Para las longitudes de pétalo ###
+
+  graf_1_longpet <- ggplot(muestreo) +
+    geom_violin(aes(x=colcor, y=longpet, fill=colcor, color = colcor),alpha=0.4,width=1.4) +
+    geom_boxplot(aes(x=colcor, y=longpet),outlier.colour = "red", outlier.shape = 16,width=0.1)+
+    geom_jitter(aes(x=colcor, y=longpet),alpha=0.4)+
+    xlab("Color de la corola")+
+    ylab("Longitud del pétalo")
+  
+  ### Para los anchos de pétalo ###
+  
+  graf_2_anchpet <- ggplot(muestreo) +
+    geom_violin(aes(x=colcor, y=anchpet, fill=colcor, color = colcor),alpha=0.4,width=1.4) +
+    geom_boxplot(aes(x=colcor, y=anchpet),outlier.colour = "red", outlier.shape = 16,width=0.1)+
+    geom_jitter(aes(x=colcor, y=anchpet),alpha=0.4)+
+    xlab("Color de la corola")+
+    ylab("Ancho del pétalo")
+  
+  ### Para las longitudes de sépalo ###
+  
+  graf_3_longsep <- ggplot(muestreo) +
+    geom_violin(aes(x=colcor, y=longsep, fill=colcor, color = colcor),alpha=0.4,width=1.4) +
+    geom_boxplot(aes(x=colcor, y=longsep),outlier.colour = "red", outlier.shape = 16,width=0.1)+
+    geom_jitter(aes(x=colcor, y=longsep),alpha=0.4)+
+    xlab("Color de la corola")+
+    ylab("Longitud de sépalo")
+  
+  ### Para los anchos de sépalo ###
+  
+  graf_4_anchsep <- graf_2_anchpet <- ggplot(muestreo) +
+    geom_violin(aes(x=colcor, y=anchsep, fill=colcor, color=colcor),alpha=0.4,width=1.4) +
+    geom_boxplot(aes(x=colcor, y=anchsep),outlier.colour = "red", outlier.shape = 16,width=0.1)+
+    geom_jitter(aes(x=colcor, y=anchsep),alpha=0.4)+
+    xlab("Color de la corola")+
+    ylab("Ancho de sépalo")
+  
+  ### Para las longitudes de pedúnculo ###
+  
+  graf_5_longped <- ggplot(muestreo) +
+    geom_violin(aes(x=colcor, y=longped, fill=colcor, col=colcor),alpha=0.4,width=1.4) +
+    geom_boxplot(aes(x=colcor, y=longped),outlier.colour = "red", outlier.shape = 16,width=0.1)+
+    geom_jitter(aes(x=colcor, y=longped),alpha=0.4)+
+    xlab("Color de la corola")+
+    ylab("Longitud del pedúnculo")
+  
+  ### Para los diámetros de corola ###
+  
+  graf_6_diamcor <- ggplot(muestreo) +
+    geom_violin(aes(x=colcor, y=diamcor, fill=colcor, col = colcor),alpha=0.4,width=1.4) +
+    geom_boxplot(aes(x=colcor, y=diamcor),outlier.colour = "red", outlier.shape = 16,width=0.1)+
+    geom_jitter(aes(x=colcor, y=diamcor),alpha=0.4)+
+    xlab("Color de la corola")+
+    ylab("Diámetro de corola")
+  
+#### Análisis de normalidad ####
+  
+  ### Método gráfico ###
+  
+  
+  
+    ## Gráfica Q-Q e Histograma ##
+  
+      # Para longitudes de pétalo #
+  
+  
+      graf_7_qq_longpet <- ggplot(muestreo, aes(sample = longpet, fill = colcor, colour = colcor)) +
+        stat_qq() +
+        stat_qq_line()+
+        ggtitle("Diagrama Q-Q de longitudes de pétalo")+
+        xlab("Longitud de pétalo")+
+        ylab("Cuantiles")
+  
+      graf_7_hist_longpet <- ggplot(muestreo)+
+        geom_bar(aes(x=longpet, fill=colcor))+
+        facet_wrap(~colcor)+
+        ggtitle("Histograma de longitudes de pétalo")+
+        xlab("Longitud de pétalo")+
+        ylab("Frecuencia")
+    
+      # Para anchos de pétalo #
+    
+      graf_8_qq_anchpet <- ggplot(muestreo, aes(sample = anchpet, fill = colcor, colour = colcor)) +
+        stat_qq() +
+        stat_qq_line()+
+        ggtitle("Diagrama Q-Q de anchos de pétalo")+
+        xlab("Ancho de pétalo")+
+        ylab("Cuantiles")
+      
+      graf_8_hist_anchpet <- ggplot(muestreo)+
+        geom_bar(aes(x=anchpet, fill=colcor))+
+        facet_wrap(~colcor)+
+        ggtitle("Histograma de anchos de pétalo")+
+        xlab("Ancho de pétalo")+
+        ylab("Frecuencia")
+      
+      # Para longitudes de sépalo #
+      
+      graf_9_qq_longsep <- ggplot(muestreo, aes(sample = longsep, fill = colcor, colour = colcor)) +
+        stat_qq() +
+        stat_qq_line()+
+        ggtitle("Diagrama Q-Q de longitudes de sépalo")+
+        xlab("Longitud de sépalo")+
+        ylab("Cuantiles")
+      
+      graf_9_hist_longsep <- ggplot(muestreo)+
+        geom_bar(aes(x=longsep, fill=colcor))+
+        facet_wrap(~colcor)+
+        ggtitle("Histograma de longitudes de sépalo")+
+        xlab("Longitud de sépalo")+
+        ylab("Frecuencia")
+      
+      # Para anchos de sépalo #
+      
+      graf_10_qq_anchsep <- ggplot(muestreo, aes(sample = anchsep, fill = colcor, colour = colcor)) +
+        stat_qq() +
+        stat_qq_line()+
+        ggtitle("Diagrama Q-Q de anchos de sépalo")+
+        xlab("Ancho de sépalo")+
+        ylab("Cuantiles")
+      
+      graf_10_hist_anchsep <- ggplot(muestreo)+
+        geom_bar(aes(x=anchsep, fill=colcor))+
+        facet_wrap(~colcor)+
+        ggtitle("Histograma de anchos de sépalo")+
+        xlab("Ancho de sépalo")+
+        ylab("Frecuencia")
+      
+      # Para longitudes de pédunculo #
+      
+      graf_11_qq_longped <- ggplot(muestreo, aes(sample = longped, fill = colcor, colour = colcor)) +
+        stat_qq() +
+        stat_qq_line()+
+        ggtitle("Diagrama Q-Q de longitudes de pedúnculo")+
+        xlab("Longitud de pedúnculo")+
+        ylab("Cuantiles")
+      
+      graf_11_hist_longped <- ggplot(muestreo)+
+        geom_bar(aes(x=longped, fill=colcor))+
+        facet_wrap(~colcor)+
+        ggtitle("Histograma de longitudes de pedúnculo")+
+        xlab("Longitud de pedúnculo")+
+        ylab("Frecuencia")
+      
+      # Para diámetros de corola #
+      
+      graf_12_qq_diamcor <- ggplot(muestreo, aes(sample = diamcor, fill = colcor, colour = colcor)) +
+        stat_qq() +
+        stat_qq_line()+
+        ggtitle("Diagrama Q-Q de diámetros de corola")+
+        xlab("Diámetro de corola")+
+        ylab("Cuantiles")
+      
+      graf_12_hist_diamcor <- ggplot(muestreo)+
+        geom_bar(aes(x=diamcor, fill=colcor))+
+        facet_wrap(~colcor)+
+        ggtitle("Histograma de diámetros de corola")+
+        xlab("Diámetro de corola")+
+        ylab("Frecuencia")
+      
+      ## Gráficamente las variables no emulan una distribución normal, se procederá a 
+      ## hacer tests de normalidad y homeoestacidad ##
+      
+  ### Método analítico ###
+      
+      
+    ## Asimetría y Curtosis ##
+      
+      
+      # Longitudes de pétalo #
+      
+      skw_longpet <- skewness(longpet) # Moderadamente sesgada
+      
+      kurt_longpet <- kurtosis(longpet) # Platicúrtica
+      
+      # Anchos de pétalo #
+      
+      skw_anchpet <- skewness(anchpet) # Aproximadamente sesgada
+      
+      kurt_anchpet <- kurtosis(anchpet) # Leptocúrtica
+      
+      # Longitudes de sépalo #
+      
+      skw_longsep <- skewness(longsep) # Aproximadamente sesgada
+      
+      kurt_longsep <- kurtosis(longsep) # Platicúrtica
+      
+      # Anchos de sépalo #
+      
+      skw_anchsep <- skewness(anchsep) # Aproximadamente sesgada
+      
+      kurt_anchsep <- kurtosis(anchsep) # Platicúrtica
+      
+      # Longitudes de pedúnculo #
+      
+      skw_longped <- skewness(longped) # Moderadamente sesgada
+      
+      kurt_longped <- kurtosis(longped) # Leptocúrtica
+      
+      # Diámetros de corola #
+      
+      skw_diamcor <- skewness(diamcor) # Moderadamente sesgada
+      
+      kurt_diamcor <- kurtosis(diamcor) # Platicúrtica
+      
+      
+    ## Test de normalidad de Kolmogorov-Smirnov con corrección de Lilliefors ##
+      
+      # La muestra es mayor de 50 #
+      
+      lil_longpet <- lillie.test(longpet) # No es normal
+      
+      lil_anchpet <- lillie.test(anchpet) # No es normal
+      
+      lil_longsep <- lillie.test(longsep) # No es normal
+      
+      lil_anchsep <- lillie.test(anchsep) # No es normal
+      
+      lil_longped <- lillie.test(longped) # No es normal
+      
+      lil_diamcor <- lillie.test(diamcor) # No es normal
+      
+      
+    ## Test de Levene para homogeneidad de varianza ##
+      
+      lev_longpet <- leveneTest(longpet ~ colcor) # Varianzas no homogéneas
+      
+      lev_anchpet <- leveneTest(anchpet ~ colcor) # Varianzas homogéneas
+      
+      lev_longsep <- leveneTest(longsep ~ colcor) # Varianzas no homogéneas
+      
+      lev_anchsep <- leveneTest(anchsep ~ colcor) # Varianzas homogéneas
+      
+      lev_longped <- leveneTest(longped ~ colcor) # Varianzas no homogéneas
+      
+      lev_diamcor <- leveneTest(diamcor ~ colcor) # Varianzas no homogéneas
+      
+      
+    ## Test de normalidad de Lilliefors con variables transformadas con logaritmo base 10 ##
+      
+      lil_log_longpet <- lillie.test(log(longpet)) # No es normal
+      
+      lil_log_anchpet <- lillie.test(log(anchpet)) # No es normal
+      
+      lil_log_longsep <- lillie.test(log(longsep)) # No es normal
+      
+      lil_log_anchsep <- lillie.test(log(anchsep)) # No es normal
+      
+      lil_log_longped <- lillie.test(log(longped)) # No es normal
+      
+      lil_log_diamcor <- lillie.test(log(diamcor)) # No es normal
+      
+      
+    ### Al no cumplir con los supestos de normalidad, se realizará una prueba no paramétrica ###
+      
+      
+#### Test de Kruskal-Wallis para diferencias significativas entre grupos ####
+      
+  kru_longpet <- kruskal.test(longpet ~ colcor)
+      
+  kru_anchpet <- kruskal.test(anchpet ~ colcor)
+  
+  kru_longsep <- kruskal.test(longsep ~ colcor)
+  
+  kru_anchsep <- kruskal.test(longsep ~ colcor)
+  
+  kru_longped <- kruskal.test(longped ~ colcor)
+  
+  kru_diamcor <- kruskal.test(diamcor ~ colcor)
+  
+  
+  # Existen diferencias significativas entre 3 grupos #
+  
+  
+#### Test de Wilcoxon con correción de Holm para diferencias entre grupos ####
+  
+  wlcx_longpet <- pairwise.wilcox.test(x = longpet, g = colcor, p.adjust.method = "holm")
+  
+  wlcx_anchpet <- pairwise.wilcox.test(x = anchpet, g = colcor, p.adjust.method = "holm")
+  
+  wlcx_longsep <- pairwise.wilcox.test(x = longsep, g = colcor, p.adjust.method = "holm")
+  
+  wlcx_anchsep <- pairwise.wilcox.test(x = anchsep, g = colcor, p.adjust.method = "holm")
+  
+  wlcx_longped <- pairwise.wilcox.test(x = longped, g = colcor, p.adjust.method = "holm")
+  
+  wlcx_diamcor <- pairwise.wilcox.test(x = diamcor, g = colcor, p.adjust.method = "holm")
+  
+  
+  # Lila y magenta no presentan diferencias significativas, actúan como un solo grupo. Blanco y rosa
+  # presentan diferencias significativas entre ellos y con el grupo lila-magenta #
+  
