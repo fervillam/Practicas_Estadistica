@@ -1,4 +1,5 @@
- ##### Relación entre morfología y fenotipo en Caharanthus Roseus #####
+
+                  ##### Relación entre morfología y fenotipo en Caharanthus Roseus #####
 
 #### Cargar los paquetes necesarios ####
 
@@ -157,8 +158,8 @@ qp1 <- qplot(longpet, longsep, data = muestreo, color = colcor, size = longped, 
         stat_qq() +
         stat_qq_line()+
         ggtitle("Diagrama Q-Q de longitudes de pétalo")+
-        xlab("Longitud de pétalo")+
-        ylab("Cuantiles")
+        xlab("Cuantiles normales teóricos")+
+        ylab("Cuantiles de Longitud de pétalo")
   
       graf_7_hist_longpet <- ggplot(muestreo)+
         geom_bar(aes(x=longpet, fill=colcor))+
@@ -173,8 +174,8 @@ qp1 <- qplot(longpet, longsep, data = muestreo, color = colcor, size = longped, 
         stat_qq() +
         stat_qq_line()+
         ggtitle("Diagrama Q-Q de anchos de pétalo")+
-        xlab("Ancho de pétalo")+
-        ylab("Cuantiles")
+        xlab("Cuantiles normales teóricos")+
+        ylab("Cuantiles de longitud de pétalo")
       
       graf_8_hist_anchpet <- ggplot(muestreo)+
         geom_bar(aes(x=anchpet, fill=colcor))+
@@ -189,8 +190,8 @@ qp1 <- qplot(longpet, longsep, data = muestreo, color = colcor, size = longped, 
         stat_qq() +
         stat_qq_line()+
         ggtitle("Diagrama Q-Q de longitudes de sépalo")+
-        xlab("Longitud de sépalo")+
-        ylab("Cuantiles")
+        xlab("Cuantiles normales teóricos")+
+        ylab("Cuantiles de longitud del sépalo")
       
       graf_9_hist_longsep <- ggplot(muestreo)+
         geom_bar(aes(x=longsep, fill=colcor))+
@@ -205,8 +206,8 @@ qp1 <- qplot(longpet, longsep, data = muestreo, color = colcor, size = longped, 
         stat_qq() +
         stat_qq_line()+
         ggtitle("Diagrama Q-Q de anchos de sépalo")+
-        xlab("Ancho de sépalo")+
-        ylab("Cuantiles")
+        xlab("Cuantiles normales teóricos")+
+        ylab("Cuantiles de ancho de sépalo")
       
       graf_10_hist_anchsep <- ggplot(muestreo)+
         geom_bar(aes(x=anchsep, fill=colcor))+
@@ -221,8 +222,8 @@ qp1 <- qplot(longpet, longsep, data = muestreo, color = colcor, size = longped, 
         stat_qq() +
         stat_qq_line()+
         ggtitle("Diagrama Q-Q de longitudes de pedúnculo")+
-        xlab("Longitud de pedúnculo")+
-        ylab("Cuantiles")
+        xlab("Cuantiles normales teóricos")+
+        ylab("Cuantiles de longitud de pedúnculo")
       
       graf_11_hist_longped <- ggplot(muestreo)+
         geom_bar(aes(x=longped, fill=colcor))+
@@ -237,8 +238,8 @@ qp1 <- qplot(longpet, longsep, data = muestreo, color = colcor, size = longped, 
         stat_qq() +
         stat_qq_line()+
         ggtitle("Diagrama Q-Q de diámetros de corola")+
-        xlab("Diámetro de corola")+
-        ylab("Cuantiles")
+        xlab("Cuantiles normales teóricos")+
+        ylab("Cuantiles de diámetro de corola")
       
       graf_12_hist_diamcor <- ggplot(muestreo)+
         geom_bar(aes(x=diamcor, fill=colcor))+
@@ -378,4 +379,5 @@ qp1 <- qplot(longpet, longsep, data = muestreo, color = colcor, size = longped, 
   
   # Lila y magenta no presentan diferencias significativas, actúan como un solo grupo. Blanco y rosa
   # presentan diferencias significativas entre ellos y con el grupo lila-magenta #
+  
   
